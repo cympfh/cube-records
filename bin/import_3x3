@@ -1,0 +1,26 @@
+#!/bin/bash
+
+usage() {
+  cat <<EOM
+Usage: $0 <TEXT_FILE_EXPORTED_FROM_CSTIMER.NET>
+EOM
+  exit
+}
+
+FILE=$1
+if [ ! -f $FILE ]; then
+  usage;
+fi
+
+RECORD=records/3x3
+if [ ! -f $RECORD ]; then
+  touch $RECORD
+fi
+
+cp $RECORD /tmp/3x3
+
+cat $FILE | jq -cM '.session1[] | if .[0][0]==0 then [.[0][1], .[1], .[3]] else empty end' >>/tmp/3x3
+cat $FILE | jq -cM '.session2[] | if .[0][0]==0 then [.[0][1], .[1], .[3]] else empty end' >>/tmp/3x3
+cat $FILE | jq -cM '.session3[] | if .[0][0]==0 then [.[0][1], .[1], .[3]] else empty end' >>/tmp/3x3
+
+cat /tmp/3x3 | jq -s '. | unique | sort_by(.[2])' | jq -cM '.[]' >$RECORD

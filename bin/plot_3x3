@@ -1,0 +1,5 @@
+#!/bin/bash
+
+mkdir -p data
+cat records/3x3 | jq -r '"\(.[2]) \(.[0])"' > /tmp/data
+gnuplot bin/plot_3x3.gp
